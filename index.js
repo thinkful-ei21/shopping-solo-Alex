@@ -1,16 +1,16 @@
 'use strict';
 
 const STORE = [
-  {name: "apples", checked: false},
-  {name: "oranges", checked: false},
-  {name: "milk", checked: true},
-  {name: "bread", checked: false}
+  {name: "apples", checked: false, hidden: false},
+  {name: "oranges", checked: false, hidden: false},
+  {name: "milk", checked: true, hidden: false},
+  {name: "bread", checked: false, hideen: false}
 ];
 
 
 function generateItemElement(item, itemIndex, template) {
         
-   return `<li class="js-item-index-element" data-item-index="${itemIndex}">
+   return `<li class="js-item-index-element ${item.hidden ? "hidden" : ''}" data-item-index="${itemIndex}">
       <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked" : ''}">${item.name}</span>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
@@ -45,7 +45,7 @@ function renderShoppingList() {
 
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  STORE.push({name: itemName, checked: false});
+  STORE.push({name: itemName, checked: false, hidden: false});
 }
 
 function handleNewItemSubmit() {
@@ -62,6 +62,8 @@ function handleNewItemSubmit() {
 function toggleCheckedForListItem(itemIndex) {
   console.log("Toggling checked property for item at index " + itemIndex);
   STORE[itemIndex].checked = !STORE[itemIndex].checked;
+  console.log($(':checkbox').prop('checked'));
+  if ($(':checkbox').prop('checked') && STORE[itemIndex].checked) {STORE[itemIndex].hidden=true}
 }
 
 
@@ -95,11 +97,10 @@ function handleHideCheckedClicked() {
   $(':checkbox').click(function (event){
     console.log('dog');
     STORE.forEach(function(item, index) {
-      if (item.checked) {
-        $(`li[data-item-index=${index}]`).toggleClass('hidden');
-      }
-    }
-  )});
+      if (item.checked) {item.hidden = !item.hidden}
+    })
+    renderShoppingList();
+    })
 }
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
