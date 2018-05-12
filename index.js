@@ -9,8 +9,8 @@ const STORE = [
 
 
 function generateItemElement(item, itemIndex, template) {
-  return `
-    <li class="js-item-index-element" data-item-index="${itemIndex}">
+        
+   return `<li class="js-item-index-element" data-item-index="${itemIndex}">
       <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked" : ''}">${item.name}</span>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
@@ -91,6 +91,16 @@ function handleDeleteItemClicked() {
   
 }
 
+function handleHideCheckedClicked() {
+  $(':checkbox').click(function (event){
+    console.log('dog');
+    STORE.forEach(function(item, index) {
+      if (item.checked) {
+        $(`li[data-item-index=${index}]`).toggleClass('hidden');
+      }
+    }
+  )});
+}
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
 // that handle new item submission and user clicks on the "check" and "delete" buttons
@@ -100,6 +110,8 @@ function handleShoppingList() {
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
+  handleHideCheckedClicked();
+  
 }
 
 // when the page loads, call `handleShoppingList`
