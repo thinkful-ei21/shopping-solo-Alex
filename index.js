@@ -63,9 +63,7 @@ function handleNewItemSubmit() {
 }
 
 function toggleCheckedForListItem(itemIndex) {
-  console.log("Toggling checked property for item at index " + itemIndex);
   STORE[itemIndex].checked = !STORE[itemIndex].checked;
-  console.log($(':checkbox').prop('checked'));
   if ($(':checkbox').prop('checked') && STORE[itemIndex].checked) {STORE[itemIndex].hidden=true}
 }
 
@@ -79,7 +77,6 @@ function getItemIndexFromElement(item) {
 
 function handleItemCheckClicked() {
   $('.js-shopping-list').on('click', `.js-item-toggle`, event => {
-    console.log('`handleItemCheckClicked` ran');
     const itemIndex = getItemIndexFromElement(event.currentTarget);
     toggleCheckedForListItem(itemIndex);
     renderShoppingList();
@@ -89,7 +86,6 @@ function handleItemCheckClicked() {
 
 function handleDeleteItemClicked() {
   $('.js-shopping-list').on('click', '.js-item-delete', function (event) {
-    console.log('`handleItemCheckClicked` ran');
     STORE.splice(getItemIndexFromElement(event.currentTarget), 1);
     renderShoppingList();
   });
@@ -98,7 +94,6 @@ function handleDeleteItemClicked() {
 
 function handleHideCheckedClicked() {
   $(':checkbox').click(function (event){
-    console.log('dog');
     STORE.forEach(function(item, index) {
       if (item.checked) {item.hidden = !item.hidden}
     })
@@ -108,8 +103,8 @@ function handleHideCheckedClicked() {
 
 function handleSearchClicked() {
   $('.js-search-form').on('click', '.js-item-search-button',function(event){
-    console.log('dogs');
     searchFilter($('.js-list-search-text').val())
+    $('.js-list-search-text').val('');
     renderShoppingList();
   })
 }
@@ -119,8 +114,6 @@ function searchFilter(searchTerm){
     if (!item.hidden){
       item.hidden = true;
       item.name.split(' ').forEach(function(singleWord){
-        console.log(singleWord);
-        console.log(searchTerm);
         if (singleWord === searchTerm) {
           item.hidden = false;
         }
@@ -132,23 +125,25 @@ function searchFilter(searchTerm){
 function resetSearch() {
   STORE.forEach(function(item) {
     item.hidden = false;
-    if (item.checked) {item.hidden = !item.hidden}
+    if (item.checked && $(':checkbox').prop('checked')) {item.hidden = !item.hidden}
   });
   renderShoppingList();
 }
 function handleEditClicked() {
   $('.js-shopping-list').on('click', '.js-item-edit', function (event) {
-    console.log('`handleItemCheckClicked` ran');
-    STORE[getItemIndexFromElement(event.currentTarget)].name = 
-      window.prompt('Enter new name for item', 
-      STORE[getItemIndexFromElement(event.currentTarget)].name);
+    let newName = (window.prompt('Enter new name for item'));
+    if (newName === null || newName === '') {newName = STORE[getItemIndexFromElement(event.currentTarget)].name} 
+    STORE[getItemIndexFromElement(event.currentTarget)].name = newName;
     renderShoppingList();
   });
 }
-// this function will be our callback when the page loads. it's responsible for
-// initially rendering the shopping list, and activating our individual functions
-// that handle new item submission and user clicks on the "check" and "delete" buttons
-// for individual shopping list items.
+
+function handleResetClicked() {
+  $('.js-search-form').on('click', '.js-item-search-reset', function (event) {
+    resetSearch();
+  });
+}
+
 function handleShoppingList() {
   renderShoppingList();
   handleNewItemSubmit();
@@ -157,7 +152,7 @@ function handleShoppingList() {
   handleHideCheckedClicked();
   handleSearchClicked();
   handleEditClicked();
+  handleResetClicked();
 }
 
-// when the page loads, call `handleShoppingList`
 $(handleShoppingList);
